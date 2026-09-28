@@ -272,7 +272,7 @@ Esta prueba comprueba la correcta tokenización de identificadores y números, e
 - **Resultado:**
   Se asigna $a = 15$, $b = 4$, $\text{suma} = 19$, $\text{resta} = 11$, $\text{mult} = 60$, $\text{div} = 3.75$ y $\text{mod} = 3$.
 
-[Insertar pantallazo de la prueba 1 aquí]
+![Texto alternativo descriptivo](imagenes/uno.png)
 
 ---
 
