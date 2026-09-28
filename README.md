@@ -309,8 +309,6 @@ Demuestra que la memoria de variables persiste durante la ejecución del program
   ```text
   radio = 3; area_aprox = 3.14159 * radio * radio;
   ```
-- **Resultado:**
-  $\text{radio} = 3$ y $\text{area\_aprox} = 28.27431$.
 
 ![imagen](imagenes/cuatro.png)
 
@@ -354,14 +352,14 @@ Se asegura la consistencia de las reglas semánticas en tiempo de ejecución: us
   - **Entrada:** `total = precio + 10;`
   - **Resultado:** `Error semantico: Variable 'precio' no ha sido inicializada`
    
-![imagen](imagenes/7.a.png)
+![imagen](imagenes/7a.png)
 
 
 - **Caso B (División por cero):**
   - **Entrada:** `n = 20 / 0;`
   - **Resultado:** `Error semantico: Division por cero`
  
-![imagen](imagenes/7.b.png)
+![imagen](imagenes/7b.png)
 
    
 - **Caso C (Módulo por cero):**
@@ -369,4 +367,4 @@ Se asegura la consistencia de las reglas semánticas en tiempo de ejecución: us
   - **Resultado:** `Error semantico: Modulo por cero`
 
 
-![imagen](imagenes/7.c.png)
+![imagen](imagenes/7c.png)
