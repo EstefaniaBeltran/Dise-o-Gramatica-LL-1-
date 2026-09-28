@@ -1,5 +1,5 @@
-# Taller Gramatica LL(1) - Archivo de prueba
-# Autora: Yeimy Beltran
+# Archivo de prueba
+
 
 # 1. Asignaciones y operaciones aritmeticas basicas
 a = 20;
