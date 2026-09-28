@@ -1,0 +1,22 @@
+# Taller Gramatica LL(1) - Archivo de prueba
+# Autora: Yeimy Beltran
+
+# 1. Asignaciones y operaciones aritmeticas basicas
+a = 20;
+b = 6;
+suma = a + b;
+resta = a - b;
+producto = a * b;
+division = a / b;
+modulo = a % b;
+
+# 2. Funciones trigonometricas y valor absoluto
+angulo = 0;
+seno = Sin(angulo);
+coseno = Cos(angulo);
+tangente = Tan(angulo);
+negativo = -12.75;
+positivo = abs(negativo);
+
+# 3. Expresion combinada con jerarquia y asociatividad
+calculo_complejo = (suma * 2) + Sin(0) - (positivo % 5);
