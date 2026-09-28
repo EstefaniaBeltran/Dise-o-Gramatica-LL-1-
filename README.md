@@ -272,7 +272,7 @@ Esta prueba comprueba la correcta tokenización de identificadores y números, e
 - **Resultado:**
   Se asigna $a = 15$, $b = 4$, $\text{suma} = 19$, $\text{resta} = 11$, $\text{mult} = 60$, $\text{div} = 3.75$ y $\text{mod} = 3$.
 
-![Texto alternativo descriptivo](imagenes/uno.png)
+![imagen](imagenes/uno.png)
 
 ---
 
@@ -284,8 +284,8 @@ Se verifica el reconocimiento de palabras reservadas, la resolución de argument
   ```
 - **Resultado:**
   $\text{ang} = 0$, $s = 0.0$, $c = 1.0$, $t = 0.0$ y $\text{val} = 42.5$.
-
-[Insertar pantallazo de la prueba 2 aquí]
+  
+![imagen](imagenes/dos.png)
 
 ---
 
@@ -298,7 +298,8 @@ Se evalúa la correcta precedencia gramatical (multiplicación, división y mód
 - **Resultado:**
   El analizador evalúa primero $(x + y) = 15$, luego multiplica por $2$ ($30$), calcula $\text{abs}(-8) / 2 = 4.0$ y finalmente resta para obtener $\text{res} = 26.0$.
 
-[Insertar pantallazo de la prueba 3 aquí]
+![imagen](imagenes/tres.png)
+
 
 ---
 
@@ -311,7 +312,7 @@ Demuestra que la memoria de variables persiste durante la ejecución del program
 - **Resultado:**
   $\text{radio} = 3$ y $\text{area\_aprox} = 28.27431$.
 
-[Insertar pantallazo de la prueba 4 aquí]
+![imagen](imagenes/cuatro.png)
 
 ---
 
@@ -324,7 +325,8 @@ Se verifica que el analizador léxico identifique caracteres ajenos al alfabeto 
 - **Resultado obtenido:**
   `Error lexico: Caracter no reconocido '@'`
 
-[Insertar pantallazo de la prueba 5 aquí]
+![imagen](imagenes/cinco.png)
+
 
 ---
 
@@ -333,11 +335,16 @@ Se valida que el parser descendente reporte discrepancias con la gramática, tal
 - **Caso A (Paréntesis sin cerrar):**
   - **Entrada:** `y = (5 + 3 * 2;`
   - **Resultado:** `Error sintactico: Se esperaba ')', se obtuvo ';'`
+
+ ![imagen](imagenes/6.1.png)
+
+
 - **Caso B (Operador sin operando):**
   - **Entrada:** `z = 5 + * 2;`
   - **Resultado:** `Error sintactico: Expresion no valida, token inesperado '*'`
 
-[Insertar pantallazo de la prueba 6 aquí]
+![imagen](imagenes/6.2.png)
+
 
 ---
 
@@ -346,11 +353,20 @@ Se asegura la consistencia de las reglas semánticas en tiempo de ejecución: us
 - **Caso A (Variable no inicializada):**
   - **Entrada:** `total = precio + 10;`
   - **Resultado:** `Error semantico: Variable 'precio' no ha sido inicializada`
+   
+![imagen](imagenes/7.a.png)
+
+
 - **Caso B (División por cero):**
   - **Entrada:** `n = 20 / 0;`
   - **Resultado:** `Error semantico: Division por cero`
+ 
+![imagen](imagenes/7.b.png)
+
+   
 - **Caso C (Módulo por cero):**
   - **Entrada:** `m = 20 % 0;`
   - **Resultado:** `Error semantico: Modulo por cero`
 
-[Insertar pantallazo de la prueba 7 aquí]
+
+![imagen](imagenes/7.c.png)
