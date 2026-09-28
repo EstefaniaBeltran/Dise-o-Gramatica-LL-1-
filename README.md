@@ -7,7 +7,7 @@
 
 ## Qué se hizo
 
-En este taller diseñé e implementé un analizador e intérprete basado en una gramática formal **LL(1)** para un lenguaje de programación aritmético. El lenguaje soporta operaciones binarias básicas ($+$, $-$, $*$, $/$, $\%$), funciones matemáticas ($\text{abs}$, $\text{Sin}$, $\text{Cos}$, $\text{Tan}$) y asignación de variables en memoria mediante una tabla de símbolos.
+En este taller diseñé e implementé un analizador e intérprete basado en una gramática formal **LL(1)** para un lenguaje de programación aritmético. El lenguaje soporta operaciones binarias básicas ($+$, $-$, $*$, $/$, $\text{mod}$), funciones matemáticas ($\text{abs}$, $\text{Sin}$, $\text{Cos}$, $\text{Tan}$) y asignación de variables en memoria mediante una tabla de símbolos.
 
 El sistema garantiza de manera estricta las tres fases fundamentales del procesamiento de lenguajes:
 
@@ -20,10 +20,14 @@ El sistema garantiza de manera estricta las tres fases fundamentales del procesa
 ### Especificación Formal de la Gramática LL(1)
 
 #### Símbolos Terminales ($\Sigma$)
-$$\Sigma = \{ \textbf{id}, \textbf{num}, =, +, -, *, /, \%, (, ), \textbf{abs}, \textbf{Sin}, \textbf{Cos}, \textbf{Tan}, ;, \$ \}$$
+$$
+\Sigma = \{ \textbf{id}, \textbf{num}, =, +, -, *, /, \text{mod}, (, ), \text{abs}, \text{Sin}, \text{Cos}, \text{Tan}, ;, \text{EOF} \}
+$$
 
 #### Símbolos No Terminales ($V_N$)
-$$V_N = \{ P, L, S, S', E_{noid}, E, E', T, T', F, F_{noid}, Fn \}$$
+$$
+V_N = \{ P, L, S, S', E_{noid}, E, E', T, T', F, F_{noid}, Fn \}
+$$
 
 **Símbolo inicial:** $P$
 
@@ -43,7 +47,7 @@ $$V_N = \{ P, L, S, S', E_{noid}, E, E', T, T', F, F_{noid}, Fn \}$$
 13. $T \to F \; T'$
 14. $T' \to * \; F \; T'$
 15. $T' \to / \; F \; T'$
-16. $T' \to \% \; F \; T'$
+16. $T' \to \text{mod} \; F \; T'$
 17. $T' \to \epsilon$
 18. $F \to \textbf{id}$
 19. $F \to F_{noid}$
@@ -60,65 +64,139 @@ $$V_N = \{ P, L, S, S', E_{noid}, E, E', T, T', F, F_{noid}, Fn \}$$
 
 ### Conjuntos Matemáticos: Primeros ($FIRST$) y Siguientes ($FOLLOW$)
 
-A continuación presento el cálculo formal de los conjuntos de primeros y siguientes para cada no terminal:
+El cálculo matemático riguroso de los conjuntos de primeros y siguientes para cada símbolo no terminal se expresa a continuación:
+
+$$
+\begin{aligned}
+FIRST(P) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num}, \epsilon \} \\
+FOLLOW(P) &= \{ \text{EOF} \} \\
+FIRST(L) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num}, \epsilon \} \\
+FOLLOW(L) &= \{ \text{EOF} \} \\
+FIRST(S) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num} \} \\
+FOLLOW(S) &= \{ ; \} \\
+FIRST(S') &= \{ \text{mod}, *, +, -, /, =, \epsilon \} \\
+FOLLOW(S') &= \{ ; \} \\
+FIRST(E_{noid}) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{num} \} \\
+FOLLOW(E_{noid}) &= \{ ; \} \\
+FIRST(E) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num} \} \\
+FOLLOW(E) &= \{ ), ; \} \\
+FIRST(E') &= \{ +, -, \epsilon \} \\
+FOLLOW(E') &= \{ ), ; \} \\
+FIRST(T) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num} \} \\
+FOLLOW(T) &= \{ ), +, -, ; \} \\
+FIRST(T') &= \{ \text{mod}, *, /, \epsilon \} \\
+FOLLOW(T') &= \{ ), +, -, ; \} \\
+FIRST(F) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num} \} \\
+FOLLOW(F) &= \{ \text{mod}, ), *, +, -, /, ; \} \\
+FIRST(F_{noid}) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{num} \} \\
+FOLLOW(F_{noid}) &= \{ \text{mod}, ), *, +, -, /, ; \} \\
+FIRST(Fn) &= \{ \text{Cos}, \text{Sin}, \text{Tan}, \text{abs} \} \\
+FOLLOW(Fn) &= \{ ( \}
+\end{aligned}
+$$
+
+#### Tabla Resumen de Primeros y Siguientes
 
 | No Terminal ($A$) | $FIRST(A)$ | $FOLLOW(A)$ |
 | :--- | :--- | :--- |
-| $P$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num}, \epsilon \}$ | $\{ \$ \}$ |
-| $L$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num}, \epsilon \}$ | $\{ \$ \}$ |
-| $S$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num} \}$ | $\{ ; \}$ |
-| $S'$ | $\{ \%, *, +, -, /, =, \epsilon \}$ | $\{ ; \}$ |
-| $E_{noid}$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{num} \}$ | $\{ ; \}$ |
-| $E$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num} \}$ | $\{ ), ; \}$ |
-| $E'$ | $\{ +, -, \epsilon \}$ | $\{ ), ; \}$ |
-| $T$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num} \}$ | $\{ ), +, -, ; \}$ |
-| $T'$ | $\{ \%, *, /, \epsilon \}$ | $\{ ), +, -, ; \}$ |
-| $F$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num} \}$ | $\{ \%, ), *, +, -, /, ; \}$ |
-| $F_{noid}$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{num} \}$ | $\{ \%, ), *, +, -, /, ; \}$ |
-| $Fn$ | $\{ \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs} \}$ | $\{ ( \}$ |
+| **$P$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num`, `ε` | `EOF` |
+| **$L$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num`, `ε` | `EOF` |
+| **$S$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `;` |
+| **$S'$** | `%`, `*`, `+`, `-`, `/`, `=`, `ε` | `;` |
+| **$E_{noid}$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` | `;` |
+| **$E$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `)`, `;` |
+| **$E'$** | `+`, `-`, `ε` | `)`, `;` |
+| **$T$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `)`, `+`, `-`, `;` |
+| **$T'$** | `%`, `*`, `/`, `ε` | `)`, `+`, `-`, `;` |
+| **$F$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `%`, `)`, `*`, `+`, `-`, `/`, `;` |
+| **$F_{noid}$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` | `%`, `)`, `*`, `+`, `-`, `/`, `;` |
+| **$Fn$** | `Cos`, `Sin`, `Tan`, `abs` | `(` |
 
 ---
 
 ### Conjuntos de Predicción / Selección ($PRED$)
 
-El conjunto de predicción para cada regla $A \to \alpha$ se define como:
+El conjunto de predicción para cada regla $A \to \alpha$ se define formalmente como:
 
-$$PRED(A \to \alpha) = \begin{cases} FIRST(\alpha) & \text{si } \epsilon \notin FIRST(\alpha) \\ (FIRST(\alpha) \setminus \{ \epsilon \}) \cup FOLLOW(A) & \text{si } \epsilon \in FIRST(\alpha) \end{cases}$$
+$$
+PRED(A \to \alpha) = \begin{cases} 
+FIRST(\alpha) & \text{si } \epsilon \notin FIRST(\alpha) \\ 
+(FIRST(\alpha) \setminus \{ \epsilon \}) \cup FOLLOW(A) & \text{si } \epsilon \in FIRST(\alpha) 
+\end{cases}
+$$
 
-| Regla | Producción | $PRED$ (Conjunto de Predicción) |
+A continuación se detalla la definición matemática de cada regla de producción:
+
+$$
+\begin{aligned}
+PRED(P \to L) &= \{ \text{EOF}, (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num} \} \\
+PRED(L \to S \; ; \; L) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num} \} \\
+PRED(L \to \epsilon) &= \{ \text{EOF} \} \\
+PRED(S \to \textbf{id} \; S') &= \{ \textbf{id} \} \\
+PRED(S \to E_{noid}) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{num} \} \\
+PRED(S' \to = \; E) &= \{ = \} \\
+PRED(S' \to T' \; E') &= \{ \text{mod}, *, +, -, /, ; \} \\
+PRED(E_{noid} \to F_{noid} \; T' \; E') &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{num} \} \\
+PRED(E \to T \; E') &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num} \} \\
+PRED(E' \to + \; T \; E') &= \{ + \} \\
+PRED(E' \to - \; T \; E') &= \{ - \} \\
+PRED(E' \to \epsilon) &= \{ ), ; \} \\
+PRED(T \to F \; T') &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{id}, \textbf{num} \} \\
+PRED(T' \to * \; F \; T') &= \{ * \} \\
+PRED(T' \to / \; F \; T') &= \{ / \} \\
+PRED(T' \to \text{mod} \; F \; T') &= \{ \text{mod} \} \\
+PRED(T' \to \epsilon) &= \{ ), +, -, ; \} \\
+PRED(F \to \textbf{id}) &= \{ \textbf{id} \} \\
+PRED(F \to F_{noid}) &= \{ (, -, \text{Cos}, \text{Sin}, \text{Tan}, \text{abs}, \textbf{num} \} \\
+PRED(F_{noid} \to \textbf{num}) &= \{ \textbf{num} \} \\
+PRED(F_{noid} \to - \; F) &= \{ - \} \\
+PRED(F_{noid} \to ( \; E \; )) &= \{ ( \} \\
+PRED(F_{noid} \to Fn \; ( \; E \; )) &= \{ \text{Cos}, \text{Sin}, \text{Tan}, \text{abs} \} \\
+PRED(Fn \to \textbf{abs}) &= \{ \textbf{abs} \} \\
+PRED(Fn \to \textbf{Sin}) &= \{ \textbf{Sin} \} \\
+PRED(Fn \to \textbf{Cos}) &= \{ \textbf{Cos} \} \\
+PRED(Fn \to \textbf{Tan}) &= \{ \textbf{Tan} \}
+\end{aligned}
+$$
+
+#### Tabla Resumen de Conjuntos de Predicción
+
+| Regla | Producción | $PRED$ (Tokens de Selección) |
 | :---: | :--- | :--- |
-| **1** | $P \to L$ | $\{ \$, (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num} \}$ |
-| **2** | $L \to S \; ; \; L$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num} \}$ |
-| **3** | $L \to \epsilon$ | $\{ \$ \}$ |
-| **4** | $S \to \textbf{id} \; S'$ | $\{ \textbf{id} \}$ |
-| **5** | $S \to E_{noid}$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{num} \}$ |
-| **6** | $S' \to = \; E$ | $\{ = \}$ |
-| **7** | $S' \to T' \; E'$ | $\{ \%, *, +, -, /, ; \}$ |
-| **8** | $E_{noid} \to F_{noid} \; T' \; E'$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{num} \}$ |
-| **9** | $E \to T \; E'$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num} \}$ |
-| **10** | $E' \to + \; T \; E'$ | $\{ + \}$ |
-| **11** | $E' \to - \; T \; E'$ | $\{ - \}$ |
-| **12** | $E' \to \epsilon$ | $\{ ), ; \}$ |
-| **13** | $T \to F \; T'$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{id}, \textbf{num} \}$ |
-| **14** | $T' \to * \; F \; T'$ | $\{ * \}$ |
-| **15** | $T' \to / \; F \; T'$ | $\{ / \}$ |
-| **16** | $T' \to \% \; F \; T'$ | $\{ \% \}$ |
-| **17** | $T' \to \epsilon$ | $\{ ), +, -, ; \}$ |
-| **18** | $F \to \textbf{id}$ | $\{ \textbf{id} \}$ |
-| **19** | $F \to F_{noid}$ | $\{ (, -, \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs}, \textbf{num} \}$ |
-| **20** | $F_{noid} \to \textbf{num}$ | $\{ \textbf{num} \}$ |
-| **21** | $F_{noid} \to - \; F$ | $\{ - \}$ |
-| **22** | $F_{noid} \to ( \; E \; )$ | $\{ ( \}$ |
-| **23** | $F_{noid} \to Fn \; ( \; E \; )$ | $\{ \textbf{Cos}, \textbf{Sin}, \textbf{Tan}, \textbf{abs} \}$ |
-| **24** | $Fn \to \textbf{abs}$ | $\{ \textbf{abs} \}$ |
-| **25** | $Fn \to \textbf{Sin}$ | $\{ \textbf{Sin} \}$ |
-| **26** | $Fn \to \textbf{Cos}$ | $\{ \textbf{Cos} \}$ |
-| **27** | $Fn \to \textbf{Tan}$ | $\{ \textbf{Tan} \}$ |
+| **1** | $P \to L$ | `EOF`, `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` |
+| **2** | $L \to S \; ; \; L$ | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` |
+| **3** | $L \to \epsilon$ | `EOF` |
+| **4** | $S \to \textbf{id} \; S'$ | `id` |
+| **5** | $S \to E_{noid}$ | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` |
+| **6** | $S' \to = \; E$ | `=` |
+| **7** | $S' \to T' \; E'$ | `%`, `*`, `+`, `-`, `/`, `;` |
+| **8** | $E_{noid} \to F_{noid} \; T' \; E'$ | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` |
+| **9** | $E \to T \; E'$ | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` |
+| **10** | $E' \to + \; T \; E'$ | `+` |
+| **11** | $E' \to - \; T \; E'$ | `-` |
+| **12** | $E' \to \epsilon$ | `)`, `;` |
+| **13** | $T \to F \; T'$ | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` |
+| **14** | $T' \to * \; F \; T'$ | `*` |
+| **15** | $T' \to / \; F \; T'$ | `/` |
+| **16** | $T' \to \text{mod} \; F \; T'$ | `%` |
+| **17** | $T' \to \epsilon$ | `)`, `+`, `-`, `;` |
+| **18** | $F \to \textbf{id}$ | `id` |
+| **19** | $F \to F_{noid}$ | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` |
+| **20** | $F_{noid} \to \textbf{num}$ | `num` |
+| **21** | $F_{noid} \to - \; F$ | `-` |
+| **22** | $F_{noid} \to ( \; E \; )$ | `(` |
+| **23** | $F_{noid} \to Fn \; ( \; E \; )$ | `Cos`, `Sin`, `Tan`, `abs` |
+| **24** | $Fn \to \textbf{abs}$ | `abs` |
+| **25** | $Fn \to \textbf{Sin}$ | `Sin` |
+| **26** | $Fn \to \textbf{Cos}$ | `Cos` |
+| **27** | $Fn \to \textbf{Tan}$ | `Tan` |
 
 #### Verificación de la Condición LL(1)
 Para cada no terminal con producciones alternativas $A \to \alpha_1 \mid \alpha_2 \mid \dots \mid \alpha_n$, se cumple rigurosamente que:
 
-$$PRED(A \to \alpha_i) \cap PRED(A \to \alpha_j) = \emptyset \quad \forall \; i \neq j$$
+$$
+PRED(A \to \alpha_i) \cap PRED(A \to \alpha_j) = \emptyset \quad \forall \; i \neq j
+$$
 
 Por lo tanto, la gramática es estrictamente determinista y pertenece a la clase **LL(1)**.
 
@@ -143,7 +221,7 @@ taller_gramatica_ll1/
 
 1. **Abrir la terminal e ingresar al directorio del taller:**
    ```bash
-   cd taller_gramatica_ll1
+   cd ~/Documentos/taller_gramatica_ll1
    ```
 
 2. **Verificar la versión instalada de Python:**
@@ -185,7 +263,7 @@ taller_gramatica_ll1/
 
 Para certificar el correcto funcionamiento de las fases léxica, sintáctica y semántica, diseñé un conjunto completo de pruebas unitarias y de integración.
 
-### Prueba 1: Asignaciones de variables y aritmética básica ($+$, $-$, $*$, $/$, $\%$)
+### Prueba 1: Asignaciones de variables y aritmética básica (+, -, *, /, %)
 Esta prueba comprueba la correcta tokenización de identificadores y números, el análisis sintáctico de operaciones binarias y la actualización en la tabla de símbolos.
 - **Entrada:**
   ```text
