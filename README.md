@@ -1,69 +1,108 @@
 # Taller: Diseño e Implementación de una Gramática LL(1)
 
-**Integrantes:** Arcos, Beltrán, Guitierrez y Lagos
+**Estudiante:** Yeimy Beltrán  
+**Materia:** Compiladores / Lenguajes Formales  
+**Lenguaje:** Python 3 (entorno Linux/Ubuntu)
 
 ---
 
 ## Qué se hizo
 
-En este taller implemento una Gramática LL(1) para un lenguaje de programación. El lenguaje soporta operaciones binarias básicas ($+$, $-$, $*$, $/$, $\text{mod}$), funciones matemáticas ($\text{abs}$, $\text{Sin}$, $\text{Cos}$, $\text{Tan}$) y asignación de variables en memoria mediante una tabla de símbolos.
+En este taller construí un pequeño lenguaje de programación que funciona como una calculadora avanzada con memoria. El programa es capaz de:
+- Realizar operaciones aritméticas básicas: suma (`+`), resta (`-`), multiplicación (`*`), división (`/`) y residuo o módulo (`%`).
+- Evaluar funciones matemáticas: valor absoluto (`abs`) y trigonometría (`Sin`, `Cos`, `Tan`).
+- Guardar valores en variables mediante asignación (por ejemplo: `x = 10;`, `y = Sin(x) + 5;`).
+- Manejar expresiones libres y combinadas respetando los paréntesis y la jerarquía de operaciones.
 
-El sistema garantiza de manera estricta las tres fases fundamentales del procesamiento de lenguajes:
+Para que el computador entienda este código, el proyecto está dividido en las tres fases clásicas de un compilador:
 
-1. **Fase Léxica (Lexer):** Escanea el flujo de caracteres para producir tokens clasificados: identificadores ($\textbf{id}$), literales numéricos enteros y decimales ($\textbf{num}$), operadores aritméticos, asignación ($=$), agrupadores ($($ y $)$), delimitadores de instrucción ($;$) y palabras reservadas para las funciones ($\text{abs}$, $\text{Sin}$, $\text{Cos}$, $\text{Tan}$). Ignora espacios en blanco y comentarios con `#`, y reporta de inmediato cualquier carácter no admitido.
-2. **Fase Sintáctica (Parser LL(1)):** Implementé un analizador descendente predictivo recursivo. Para admitir tanto asignaciones de variables ($\textbf{id} = E$) como expresiones sin ambigüedad en el token $\textbf{id}$, apliqué factorización por la izquierda. Esto asegura que la selección de cada producción sea determinista con exactamente 1 símbolo de preanálisis (*lookahead*).
-3. **Fase Semántica (Evaluador y Tabla de Símbolos):** Valida la existencia y alcance de las variables antes de su uso (evitando variables no inicializadas), detecta en tiempo de ejecución divisiones y módulos por cero, y sintetiza el cálculo numérico respetando la precedencia formal y asociatividad de las operaciones.
+1. **Fase Léxica (Analizador Léxico o Lexer):**  
+   Lee el texto que escribe el usuario caracter por caracter y lo agrupa en fichas llamadas *tokens* (números, nombres de variables, signos de suma, palabras reservadas como `Sin`, etc.). Si el usuario escribe algo inválido (como un signo `@`), aquí se detecta de inmediato y se avisa el error. También ignora espacios y comentarios iniciados con `#`.
 
----
+2. **Fase Sintáctica (Analizador Sintáctico o Parser LL(1)):**  
+   Verifica que los tokens estén en el orden correcto de acuerdo con las reglas de la gramática. Si el usuario olvida cerrar un paréntesis o pone dos operadores seguidos (`5 + * 3`), el parser detecta el error de sintaxis. Está programado mediante la técnica de *descenso recursivo*, lo que significa que cada regla de la gramática se convierte en una función de Python.
 
-### Especificación Formal de la Gramática LL(1)
-
-#### Símbolos Terminales ($\Sigma$)
-$$
-\Sigma = \{ \textbf{id}, \textbf{num}, =, +, -, *, /, \text{mod}, (, ), \text{abs}, \text{Sin}, \text{Cos}, \text{Tan}, ;, \text{EOF} \}
-$$
-
-#### Símbolos No Terminales ($V_N$)
-$$
-V_N = \{ P, L, S, S', E_{noid}, E, E', T, T', F, F_{noid}, Fn \}
-$$
-
-**Símbolo inicial:** $P$
-
-#### Producciones de la Gramática
-1. $P \to L$
-2. $L \to S \; ; \; L$
-3. $L \to \epsilon$
-4. $S \to \textbf{id} \; S'$
-5. $S \to E_{noid}$
-6. $S' \to = \; E$
-7. $S' \to T' \; E'$
-8. $E_{noid} \to F_{noid} \; T' \; E'$
-9. $E \to T \; E'$
-10. $E' \to + \; T \; E'$
-11. $E' \to - \; T \; E'$
-12. $E' \to \epsilon$
-13. $T \to F \; T'$
-14. $T' \to * \; F \; T'$
-15. $T' \to / \; F \; T'$
-16. $T' \to \text{mod} \; F \; T'$
-17. $T' \to \epsilon$
-18. $F \to \textbf{id}$
-19. $F \to F_{noid}$
-20. $F_{noid} \to \textbf{num}$
-21. $F_{noid} \to - \; F$
-22. $F_{noid} \to ( \; E \; )$
-23. $F_{noid} \to Fn \; ( \; E \; )$
-24. $Fn \to \textbf{abs}$
-25. $Fn \to \textbf{Sin}$
-26. $Fn \to \textbf{Cos}$
-27. $Fn \to \textbf{Tan}$
+3. **Fase Semántica (Evaluador y Tabla de Símbolos):**  
+   Aquí se revisa el significado de las cosas y se calculan los resultados:
+   - Administra la **tabla de símbolos** (un diccionario en memoria donde se guardan los nombres de las variables y sus valores).
+   - Comprueba que no usemos una variable que no ha sido creada o inicializada antes.
+   - Previene errores matemáticos en tiempo de ejecución, como dividir entre cero o sacar el módulo entre cero.
 
 ---
 
-### Conjuntos Matemáticos: Primeros ($FIRST$) y Siguientes ($FOLLOW$)
+## Explicación Sencilla de la Gramática
 
-El cálculo matemático riguroso de los conjuntos de primeros y siguientes para cada símbolo no terminal se expresa a continuación:
+Para que el analizador funcione sin equivocarse y con solo mirar un símbolo hacia adelante (técnica **LL(1)**), la gramática se organiza por niveles de importancia (jerarquía matemática):
+
+1. **Nivel del Programa y Sentencias ($P, L, S$):**  
+   Un programa es una lista de instrucciones separadas por punto y coma (`;`). Cada instrucción puede ser una asignación a una variable (`x = ...`) o una operación directa.
+
+2. **Nivel de Sumas y Restas ($E, E'$):**  
+   Representa las expresiones generales. Tienen menor prioridad, por lo que se resuelven al final.
+
+3. **Nivel de Multiplicaciones, Divisiones y Módulos ($T, T'$):**  
+   Los términos tienen mayor prioridad que las sumas y restas.
+
+4. **Nivel de Factores y Funciones ($F, F_{noid}, Fn$):**  
+   Es lo más básico y con máxima prioridad: números directos, signos negativos, expresiones entre paréntesis `( ... )`, y llamadas a funciones como `Sin(...)` o `abs(...)`.
+
+> **¿Por qué aparecen "primas" como $E'$ o $T'$ y el símbolo $\epsilon$?**  
+> Si una regla dijera $E \to E + T$, el computador se llamaría a sí mismo infinitamente intentando resolver $E$ antes de avanzar. Para evitar ese bucle infinito (llamado *recursión izquierda*), dividimos la regla usando primas ($E'$). El símbolo $\epsilon$ (épsilon) simplemente le dice al código: *"si ya no hay más sumas ni restas, termina aquí y continúa"*.
+
+---
+
+### Producciones Formales de la Gramática
+
+A continuación se listan las 27 reglas ordenadas por su función dentro del lenguaje:
+
+#### 1. Estructura general de instrucciones
+- **Regla 1:** $P \to L$ *(Un programa inicia con una lista de instrucciones)*
+- **Regla 2:** $L \to S \; ; \; L$ *(Una instrucción terminada en punto y coma seguida de más instrucciones)*
+- **Regla 3:** $L \to \epsilon$ *(Fin de la lista de instrucciones)*
+
+#### 2. Instrucciones: Asignaciones y expresiones
+- **Regla 4:** $S \to \textbf{id} \; S'$ *(Instrucción que empieza con una variable)*
+- **Regla 5:** $S \to E_{noid}$ *(Instrucción que empieza directamente con un número, paréntesis o función)*
+- **Regla 6:** $S' \to = \; E$ *(Si después de la variable viene un `=`, es una asignación)*
+- **Regla 7:** $S' \to T' \; E'$ *(Si no hay `=`, la variable hace parte de una operación aritmética normal)*
+- **Regla 8:** $E_{noid} \to F_{noid} \; T' \; E'$ *(Operación que no inicia con identificador)*
+
+#### 3. Sumas y restas (Menor prioridad)
+- **Regla 9:** $E \to T \; E'$ *(Una expresión comienza con un término)*
+- **Regla 10:** $E' \to + \; T \; E'$ *(Operación suma)*
+- **Regla 11:** $E' \to - \; T \; E'$ *(Operación resta)*
+- **Regla 12:** $E' \to \epsilon$ *(No hay más sumas ni restas)*
+
+#### 4. Multiplicaciones, divisiones y residuos (Media prioridad)
+- **Regla 13:** $T \to F \; T'$ *(Un término comienza con un factor)*
+- **Regla 14:** $T' \to * \; F \; T'$ *(Operación multiplicación)*
+- **Regla 15:** $T' \to / \; F \; T'$ *(Operación división)*
+- **Regla 16:** $T' \to \text{mod} \; F \; T'$ *(Operación módulo o residuo `%`)*
+- **Regla 17:** $T' \to \epsilon$ *(No hay más multiplicaciones ni divisiones)*
+
+#### 5. Factores, números y funciones matemáticas (Máxima prioridad)
+- **Regla 18:** $F \to \textbf{id}$ *(Uso del valor de una variable guardada)*
+- **Regla 19:** $F \to F_{noid}$ *(Otro tipo de factor)*
+- **Regla 20:** $F_{noid} \to \textbf{num}$ *(Un número entero o decimal)*
+- **Regla 21:** $F_{noid} \to - \; F$ *(Signo negativo unario, por ejemplo `-5`)*
+- **Regla 22:** $F_{noid} \to ( \; E \; )$ *(Expresión agrupada entre paréntesis)*
+- **Regla 23:** $F_{noid} \to Fn \; ( \; E \; )$ *(Llamada a una función con su argumento entre paréntesis)*
+- **Regla 24:** $Fn \to \textbf{abs}$ *(Función valor absoluto)*
+- **Regla 25:** $Fn \to \textbf{Sin}$ *(Función trigonométrica seno)*
+- **Regla 26:** $Fn \to \textbf{Cos}$ *(Función trigonométrica coseno)*
+- **Regla 27:** $Fn \to \textbf{Tan}$ *(Función trigonométrica tangente)*
+
+---
+
+## Conjuntos Matemáticos (Primeros, Siguientes y Predicción)
+
+Para que el programa sea **LL(1)**, el analizador sintáctico necesita una "guía" para saber qué regla aplicar en cada momento con solo ver el siguiente token que tiene al frente (*lookahead*):
+
+- **Primeros ($FIRST$):** Indica con qué fichas o símbolos válidos puede empezar una regla determinada.
+- **Siguientes ($FOLLOW$):** Indica qué fichas pueden aparecer legalmente justo después de que se termina de procesar esa regla.
+- **Predicción ($PRED$):** Es la regla de decisión que usa el código. Cuando el analizador lee el siguiente token, compara con este conjunto y elige el camino correcto sin dudar y sin tener que devolverse.
+
+### Definición Matemática en $\LaTeX$
 
 $$
 \begin{aligned}
@@ -94,37 +133,35 @@ FOLLOW(Fn) &= \{ ( \}
 \end{aligned}
 $$
 
-#### Tabla Resumen de Primeros y Siguientes
+### Tabla Resumen de Primeros y Siguientes
 
-| No Terminal ($A$) | $FIRST(A)$ | $FOLLOW(A)$ |
+| No Terminal ($A$) | ¿Con qué puede empezar? ($FIRST$) | ¿Qué puede venir después? ($FOLLOW$) |
 | :--- | :--- | :--- |
-| **$P$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num`, `ε` | `EOF` |
-| **$L$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num`, `ε` | `EOF` |
-| **$S$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `;` |
-| **$S'$** | `%`, `*`, `+`, `-`, `/`, `=`, `ε` | `;` |
-| **$E_{noid}$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` | `;` |
-| **$E$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `)`, `;` |
-| **$E'$** | `+`, `-`, `ε` | `)`, `;` |
-| **$T$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `)`, `+`, `-`, `;` |
-| **$T'$** | `%`, `*`, `/`, `ε` | `)`, `+`, `-`, `;` |
-| **$F$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `%`, `)`, `*`, `+`, `-`, `/`, `;` |
-| **$F_{noid}$** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` | `%`, `)`, `*`, `+`, `-`, `/`, `;` |
-| **$Fn$** | `Cos`, `Sin`, `Tan`, `abs` | `(` |
+| **$P$ (Programa)** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num`, `ε` | `EOF` (fin de archivo) |
+| **$L$ (Lista de sentencias)** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num`, `ε` | `EOF` |
+| **$S$ (Sentencia)** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `;` |
+| **$S'$ (Cola de sentencia)** | `%`, `*`, `+`, `-`, `/`, `=`, `ε` | `;` |
+| **$E_{noid}$ (Expresión sin ID inicial)** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` | `;` |
+| **$E$ (Expresión)** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `)`, `;` |
+| **$E'$ (Cola de suma/resta)** | `+`, `-`, `ε` | `)`, `;` |
+| **$T$ (Término)** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `)`, `+`, `-`, `;` |
+| **$T'$ (Cola de mult/div/mod)** | `%`, `*`, `/`, `ε` | `)`, `+`, `-`, `;` |
+| **$F$ (Factor)** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` | `%`, `)`, `*`, `+`, `-`, `/`, `;` |
+| **$F_{noid}$ (Factor numérico/función)** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` | `%`, `)`, `*`, `+`, `-`, `/`, `;` |
+| **$Fn$ (Nombre de función)** | `Cos`, `Sin`, `Tan`, `abs` | `(` |
 
 ---
 
-### Conjuntos de Predicción / Selección ($PRED$)
+### Conjuntos de Predicción (La toma de decisiones del Parser)
 
-El conjunto de predicción para cada regla $A \to \alpha$ se define formalmente como:
+Para cada producción posible $A \to \alpha$, el conjunto de predicción le indica al analizador exactamente qué token debe ver para elegir esa regla:
 
 $$
 PRED(A \to \alpha) = \begin{cases} 
-FIRST(\alpha) & \text{si } \epsilon \notin FIRST(\alpha) \\ 
-(FIRST(\alpha) \setminus \{ \epsilon \}) \cup FOLLOW(A) & \text{si } \epsilon \in FIRST(\alpha) 
+FIRST(\alpha) & \text{si la regla no produce } \epsilon \\ 
+(FIRST(\alpha) \setminus \{ \epsilon \}) \cup FOLLOW(A) & \text{si la regla produce } \epsilon 
 \end{cases}
 $$
-
-A continuación se detalla la definición matemática de cada regla de producción:
 
 $$
 \begin{aligned}
@@ -158,9 +195,9 @@ PRED(Fn \to \textbf{Tan}) &= \{ \textbf{Tan} \}
 \end{aligned}
 $$
 
-#### Tabla Resumen de Conjuntos de Predicción
+#### Tabla Resumen de Predicción
 
-| Regla | Producción | $PRED$ (Tokens de Selección) |
+| Regla | Producción | Tokens que activan esta regla ($PRED$) |
 | :---: | :--- | :--- |
 | **1** | $P \to L$ | `EOF`, `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` |
 | **2** | $L \to S \; ; \; L$ | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `id`, `num` |
@@ -190,69 +227,68 @@ $$
 | **26** | $Fn \to \textbf{Cos}$ | `Cos` |
 | **27** | $Fn \to \textbf{Tan}$ | `Tan` |
 
-#### Verificación de la Condición LL(1)
-Para cada no terminal con producciones alternativas $A \to \alpha_1 \mid \alpha_2 \mid \dots \mid \alpha_n$, se cumple rigurosamente que:
+#### ¿Por qué esto demuestra que es LL(1)?
+Si revisamos las opciones de cualquier decisión (por ejemplo, para $E'$ si sumamos con `+`, restamos con `-`, o terminamos con `)` o `;`), **ningún conjunto comparte tokens**:
 
 $$
 PRED(A \to \alpha_i) \cap PRED(A \to \alpha_j) = \emptyset \quad \forall \; i \neq j
 $$
 
-Por lo tanto, la gramática es estrictamente determinista y pertenece a la clase **LL(1)**.
+Al ser conjuntos completamente disjuntos, el código en Python nunca tiene dudas de qué función llamar ni necesita retroceder (*backtracking*).
 
 ---
 
 ## Cómo se ejecuta
 
 ### Requisitos
-- Linux (probado en Ubuntu 20.04 / 22.04 LTS).
+- Linux (Ubuntu 20.04 / 22.04 LTS o similar).
 - Python 3.8 o superior.
-- No requiere dependencias externas ni librerías de terceros (utiliza únicamente la librería estándar de Python).
+- No se necesitan librerías externas (solo la librería estándar de Python).
 
-### Estructura del proyecto
+### Estructura de la carpeta
 ```text
 taller_gramatica_ll1/
-├── interprete.py    # Analizador Léxico, Sintáctico LL(1) y Semántico
-├── ejemplo.txt       # Script de demostración con operaciones y asignaciones
-└── README.md         # Documentación académica del taller
+├── interprete.py    # Código en Python con el Lexer, Parser y Evaluador
+├── ejemplo.txt       # Archivo de texto con instrucciones de prueba
+└── README.md         # Este documento con las explicaciones del taller
 ```
 
-### Instrucciones paso a paso en terminal
+### Comandos en la terminal
 
-1. **Abrir la terminal e ingresar al directorio del taller:**
+1. **Entrar a la carpeta del proyecto en Documentos:**
    ```bash
    cd ~/Documentos/taller_gramatica_ll1
    ```
 
-2. **Verificar la versión instalada de Python:**
+2. **Revisar que Python esté disponible:**
    ```bash
    python3 --version
    ```
 
-3. **Ejecutar el script de prueba integrado:**
-   Para ejecutar el archivo de ejemplo `ejemplo.txt` y observar la evaluación de las instrucciones junto a la tabla de símbolos final:
+3. **Ejecutar el archivo de prueba (`ejemplo.txt`):**
+   Lee el archivo, ejecuta todas las asignaciones y operaciones, y muestra la tabla de variables al final:
    ```bash
    python3 interprete.py ejemplo.txt
    ```
 
-4. **Ejecutar la suite automatizada de pruebas:**
-   Para comprobar todos los casos válidos y los escenarios de error controlado (léxico, sintáctico y semántico):
+4. **Correr las pruebas automáticas:**
+   Prueba todas las operaciones y comprueba que los errores se capturen con mensajes claros:
    ```bash
    python3 interprete.py --test
    ```
 
-5. **Modo interactivo (REPL):**
-   Si se desea ingresar instrucciones interactivamente línea por línea:
+5. **Modo interactivo (escribir operaciones directamente):**
    ```bash
    python3 interprete.py
    ```
-   *Ejemplo de uso en el prompt:*
+   *Ejemplo en la consola:*
    ```text
    >> x = 10;
    x = 10
    >> y = Sin(0) + 5;
    y = 5.0
-   >> res = (x * 2) - y;
-   res = 15.0
+   >> total = x * y;
+   total = 50.0
    >> salir
    ```
 
@@ -260,110 +296,96 @@ taller_gramatica_ll1/
 
 ## Pruebas y Resultados
 
-Para certificar el correcto funcionamiento de las fases léxica, sintáctica y semántica, diseñé un conjunto completo de pruebas unitarias y de integración.
+Diseñé estas pruebas para comprobar que cada parte del código funciona correctamente y que ningún error inesperado hace caer el programa.
 
 ### Prueba 1: Asignaciones de variables y aritmética básica (+, -, *, /, %)
-Esta prueba comprueba la correcta tokenización de identificadores y números, el análisis sintáctico de operaciones binarias y la actualización en la tabla de símbolos.
+Se prueba que se reconozcan los nombres de las variables y los números, que se calculen las 5 operaciones y que queden guardadas en memoria.
 - **Entrada:**
   ```text
   a = 15; b = 4; suma = a + b; resta = a - b; mult = a * b; div = a / b; mod = a % b;
   ```
-- **Resultado:**
-  Se asigna $a = 15$, $b = 4$, $\text{suma} = 19$, $\text{resta} = 11$, $\text{mult} = 60$, $\text{div} = 3.75$ y $\text{mod} = 3$.
+- **Resultado esperado:**
+  $a = 15$, $b = 4$, $\text{suma} = 19$, $\text{resta} = 11$, $\text{mult} = 60$, $\text{div} = 3.75$ y $\text{mod} = 3$.
 
-![imagen](imagenes/uno.png)
+[Insertar pantallazo de la prueba 1 aquí]
 
 ---
 
-### Prueba 2: Funciones matemáticas ($\text{abs}$, $\text{Sin}$, $\text{Cos}$, $\text{Tan}$)
-Se verifica el reconocimiento de palabras reservadas, la resolución de argumentos entre paréntesis y la invocación de las funciones matemáticas estándar.
+### Prueba 2: Funciones matemáticas (abs, Sin, Cos, Tan)
+Se evalúa que el programa reconozca las funciones especiales y calcule su valor numérico real.
 - **Entrada:**
   ```text
   ang = 0; s = Sin(ang); c = Cos(ang); t = Tan(ang); val = abs(-42.5);
   ```
-- **Resultado:**
+- **Resultado esperado:**
   $\text{ang} = 0$, $s = 0.0$, $c = 1.0$, $t = 0.0$ y $\text{val} = 42.5$.
-  
-![imagen](imagenes/dos.png)
+
+[Insertar pantallazo de la prueba 2 aquí]
 
 ---
 
-### Prueba 3: Jerarquía de operadores y expresiones compuestas con paréntesis
-Se evalúa la correcta precedencia gramatical (multiplicación, división y módulo preceden a la suma y resta), la asociatividad por izquierda y la anidación de paréntesis.
+### Prueba 3: Jerarquía de operaciones y paréntesis
+Se comprueba que se respeten las reglas matemáticas: resolver primero lo de adentro de los paréntesis y hacer las multiplicaciones/divisiones antes de las sumas.
 - **Entrada:**
   ```text
   x = 10; y = 5; res = ((x + y) * 2) - abs(-8) / 2;
   ```
-- **Resultado:**
-  El analizador evalúa primero $(x + y) = 15$, luego multiplica por $2$ ($30$), calcula $\text{abs}(-8) / 2 = 4.0$ y finalmente resta para obtener $\text{res} = 26.0$.
+- **Resultado esperado:**
+  Primero suma $(10 + 5) = 15$, luego multiplica por 2 ($30$), calcula $\text{abs}(-8)/2 = 4.0$ y resta para obtener $\text{res} = 26.0$.
 
-![imagen](imagenes/tres.png)
-
+[Insertar pantallazo de la prueba 3 aquí]
 
 ---
 
-### Prueba 4: Reutilización acumulativa de variables en la tabla de símbolos
-Demuestra que la memoria de variables persiste durante la ejecución del programa y que los valores previamente computados pueden ser utilizados en nuevas fórmulas.
+### Prueba 4: Reutilización de variables en memoria
+Verifica que las variables guardadas se puedan usar en cálculos posteriores.
 - **Entrada:**
   ```text
   radio = 3; area_aprox = 3.14159 * radio * radio;
   ```
+- **Resultado esperado:**
+  $\text{radio} = 3$ y $\text{area\_aprox} = 28.27431$.
 
-![imagen](imagenes/cuatro.png)
+[Insertar pantallazo de la prueba 4 aquí]
 
 ---
 
-### Prueba 5: Detección y captura de errores léxicos
-Se verifica que el analizador léxico identifique caracteres ajenos al alfabeto del lenguaje y reporte el error sin generar un fallo abrupto en el intérprete.
+### Prueba 5: Detección de errores léxicos
+Si el usuario escribe caracteres raros que no existen en el lenguaje, el programa debe avisar en qué caracter falló.
 - **Entrada:**
   ```text
   x = 10 @ 2;
   ```
-- **Resultado obtenido:**
+- **Resultado:**
   `Error lexico: Caracter no reconocido '@'`
 
-![imagen](imagenes/cinco.png)
-
+[Insertar pantallazo de la prueba 5 aquí]
 
 ---
 
-### Prueba 6: Detección y captura de errores sintácticos
-Se valida que el parser descendente reporte discrepancias con la gramática, tales como paréntesis sin cerrar o tokens inesperados que violen los conjuntos de selección.
+### Prueba 6: Detección de errores sintácticos
+Si la estructura de la oración está rota (por ejemplo, faltan paréntesis o sobran signos).
 - **Caso A (Paréntesis sin cerrar):**
   - **Entrada:** `y = (5 + 3 * 2;`
   - **Resultado:** `Error sintactico: Se esperaba ')', se obtuvo ';'`
-
- ![imagen](imagenes/6.1.png)
-
-
-- **Caso B (Operador sin operando):**
+- **Caso B (Operador sin número al lado):**
   - **Entrada:** `z = 5 + * 2;`
   - **Resultado:** `Error sintactico: Expresion no valida, token inesperado '*'`
 
-![imagen](imagenes/6.2.png)
-
+[Insertar pantallazo de la prueba 6 aquí]
 
 ---
 
-### Prueba 7: Detección y captura de errores semánticos
-Se asegura la consistencia de las reglas semánticas en tiempo de ejecución: uso de variables declaradas y prohibición de operaciones aritméticas matemáticamente indefinidas.
-- **Caso A (Variable no inicializada):**
+### Prueba 7: Detección de errores semánticos
+Errores de lógica que violan las reglas del lenguaje o de las matemáticas:
+- **Caso A (Usar una variable que no existe todavía):**
   - **Entrada:** `total = precio + 10;`
   - **Resultado:** `Error semantico: Variable 'precio' no ha sido inicializada`
-   
-![imagen](imagenes/7a.png)
-
-
-- **Caso B (División por cero):**
+- **Caso B (División entre cero):**
   - **Entrada:** `n = 20 / 0;`
   - **Resultado:** `Error semantico: Division por cero`
- 
-![imagen](imagenes/7b.png)
-
-   
-- **Caso C (Módulo por cero):**
+- **Caso C (Módulo entre cero):**
   - **Entrada:** `m = 20 % 0;`
   - **Resultado:** `Error semantico: Modulo por cero`
 
-
-![imagen](imagenes/7c.png)
+[Insertar pantallazo de la prueba 7 aquí]
