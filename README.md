@@ -2,7 +2,7 @@
 
 **Integrantes:** Arcos, Beltrán, Guitierrez y Lagos
 
----
+
 
 ## Qué se hizo
 
@@ -26,7 +26,7 @@ Para que el computador entienda este código, el taller está dividido en las tr
    - Comprueba que no usemos una variable que no ha sido creada o inicializada antes.
    - Previene errores matemáticos en tiempo de ejecución, como dividir entre cero o sacar el módulo entre cero.
 
----
+
 
 ## Explicación Sencilla de la Gramática
 
@@ -44,10 +44,9 @@ Para que el analizador funcione sin equivocarse y con solo mirar un símbolo hac
 4. **Nivel de Factores y Funciones ($F, F_{noid}, Fn$):**  
    Es lo más básico y con máxima prioridad: números directos, signos negativos, expresiones entre paréntesis `( ... )`, y llamadas a funciones como `Sin(...)` o `abs(...)`.
 
-> **¿Por qué aparecen "primas" como $E'$ o $T'$ y el símbolo $\epsilon$?**  
-> Si una regla dijera $E \to E + T$, el computador se llamaría a sí mismo infinitamente intentando resolver $E$ antes de avanzar. Para evitar ese bucle infinito (llamado *recursión izquierda*), dividimos la regla usando primas ($E'$). El símbolo $\epsilon$ (épsilon) simplemente le dice al código: *"si ya no hay más sumas ni restas, termina aquí y continúa"*.
+**¿Por qué aparecen "primas" como $E'$ o $T'$ y el símbolo $\epsilon$?**  
+Si una regla dijera $E \to E + T$, el computador se llamaría a sí mismo infinitamente intentando resolver $E$ antes de avanzar. Para evitar ese bucle infinito (llamado *recursión izquierda*), dividimos la regla usando primas ($E'$). El símbolo $\epsilon$ (épsilon) simplemente le dice al código: *"si ya no hay más sumas ni restas, termina aquí y continúa"*.
 
----
 
 ### Producciones Formales de la Gramática
 
@@ -90,7 +89,7 @@ A continuación se listan las 27 reglas ordenadas por su función dentro del len
 - **Regla 26:** $Fn \to \textbf{Cos}$ *(Función trigonométrica coseno)*
 - **Regla 27:** $Fn \to \textbf{Tan}$ *(Función trigonométrica tangente)*
 
----
+
 
 ## Conjuntos Matemáticos (Primeros, Siguientes y Predicción)
 
@@ -148,7 +147,7 @@ $$
 | **$F_{noid}$ (Factor numérico/función)** | `(`, `-`, `Cos`, `Sin`, `Tan`, `abs`, `num` | `%`, `)`, `*`, `+`, `-`, `/`, `;` |
 | **$Fn$ (Nombre de función)** | `Cos`, `Sin`, `Tan`, `abs` | `(` |
 
----
+
 
 ### Conjuntos de Predicción (La toma de decisiones del Parser)
 
@@ -234,12 +233,10 @@ $$
 
 Al ser conjuntos completamente disjuntos, el código en Python nunca tiene dudas de qué función llamar ni necesita retroceder (*backtracking*).
 
----
 
 ## Cómo se ejecuta
 
 ### Requisitos
-- Linux (Ubuntu 20.04 / 22.04 LTS o similar).
 - Python 3.8 o superior.
 - No se necesitan librerías externas (solo la librería estándar de Python).
 
@@ -249,6 +246,7 @@ taller_gramatica_ll1/
 ├── interprete.py    # Código en Python con el Lexer, Parser y Evaluador
 ├── ejemplo.txt       # Archivo de texto con instrucciones de prueba
 └── README.md         # Este documento con las explicaciones del taller
+└── imagenes         # Carpeta con las pruebas realizadas
 ```
 
 ### Comandos en la terminal
