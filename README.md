@@ -1,23 +1,21 @@
 # Taller: Diseño e Implementación de una Gramática LL(1)
 
-**Estudiante:** Yeimy Beltrán  
-**Materia:** Compiladores / Lenguajes Formales  
-**Lenguaje:** Python 3 (entorno Linux/Ubuntu)
+**Integrantes:** Arcos, Beltrán, Guitierrez y Lagos
 
 ---
 
 ## Qué se hizo
 
-En este taller construí un pequeño lenguaje de programación que funciona como una calculadora avanzada con memoria. El programa es capaz de:
+En este taller construimos un pequeño lenguaje de programación que funciona como una calculadora. El programa es capaz de:
 - Realizar operaciones aritméticas básicas: suma (`+`), resta (`-`), multiplicación (`*`), división (`/`) y residuo o módulo (`%`).
 - Evaluar funciones matemáticas: valor absoluto (`abs`) y trigonometría (`Sin`, `Cos`, `Tan`).
 - Guardar valores en variables mediante asignación (por ejemplo: `x = 10;`, `y = Sin(x) + 5;`).
 - Manejar expresiones libres y combinadas respetando los paréntesis y la jerarquía de operaciones.
 
-Para que el computador entienda este código, el proyecto está dividido en las tres fases clásicas de un compilador:
+Para que el computador entienda este código, el taller está dividido en las tres fases clásicas de un compilador:
 
 1. **Fase Léxica (Analizador Léxico o Lexer):**  
-   Lee el texto que escribe el usuario caracter por caracter y lo agrupa en fichas llamadas *tokens* (números, nombres de variables, signos de suma, palabras reservadas como `Sin`, etc.). Si el usuario escribe algo inválido (como un signo `@`), aquí se detecta de inmediato y se avisa el error. También ignora espacios y comentarios iniciados con `#`.
+   Lee el texto que escribe el usuario caracter por caracter y lo agrupa en tokens (números, nombres de variables, signos de suma, palabras reservadas como `Sin`, etc.). Si el usuario escribe algo inválido (como un signo `@`), aquí se detecta de inmediato y se avisa el error. También ignora espacios y comentarios iniciados con `#`.
 
 2. **Fase Sintáctica (Analizador Sintáctico o Parser LL(1)):**  
    Verifica que los tokens estén en el orden correcto de acuerdo con las reglas de la gramática. Si el usuario olvida cerrar un paréntesis o pone dos operadores seguidos (`5 + * 3`), el parser detecta el error de sintaxis. Está programado mediante la técnica de *descenso recursivo*, lo que significa que cada regla de la gramática se convierte en una función de Python.
@@ -96,13 +94,13 @@ A continuación se listan las 27 reglas ordenadas por su función dentro del len
 
 ## Conjuntos Matemáticos (Primeros, Siguientes y Predicción)
 
-Para que el programa sea **LL(1)**, el analizador sintáctico necesita una "guía" para saber qué regla aplicar en cada momento con solo ver el siguiente token que tiene al frente (*lookahead*):
+Para que el programa sea **LL(1)**, el analizador sintáctico necesita una "guía" para saber qué regla aplicar en cada momento con solo ver el siguiente token que tiene al frente:
 
 - **Primeros ($FIRST$):** Indica con qué fichas o símbolos válidos puede empezar una regla determinada.
 - **Siguientes ($FOLLOW$):** Indica qué fichas pueden aparecer legalmente justo después de que se termina de procesar esa regla.
 - **Predicción ($PRED$):** Es la regla de decisión que usa el código. Cuando el analizador lee el siguiente token, compara con este conjunto y elige el camino correcto sin dudar y sin tener que devolverse.
 
-### Definición Matemática en $\LaTeX$
+### Definición Matemática
 
 $$
 \begin{aligned}
@@ -307,7 +305,7 @@ Se prueba que se reconozcan los nombres de las variables y los números, que se 
 - **Resultado esperado:**
   $a = 15$, $b = 4$, $\text{suma} = 19$, $\text{resta} = 11$, $\text{mult} = 60$, $\text{div} = 3.75$ y $\text{mod} = 3$.
 
-[Insertar pantallazo de la prueba 1 aquí]
+![prueba](imagenes/uno.png)
 
 ---
 
@@ -320,7 +318,7 @@ Se evalúa que el programa reconozca las funciones especiales y calcule su valor
 - **Resultado esperado:**
   $\text{ang} = 0$, $s = 0.0$, $c = 1.0$, $t = 0.0$ y $\text{val} = 42.5$.
 
-[Insertar pantallazo de la prueba 2 aquí]
+![prueba](imagenes/dos.png)
 
 ---
 
@@ -332,8 +330,7 @@ Se comprueba que se respeten las reglas matemáticas: resolver primero lo de ade
   ```
 - **Resultado esperado:**
   Primero suma $(10 + 5) = 15$, luego multiplica por 2 ($30$), calcula $\text{abs}(-8)/2 = 4.0$ y resta para obtener $\text{res} = 26.0$.
-
-[Insertar pantallazo de la prueba 3 aquí]
+![prueba](imagenes/cuatro.png)
 
 ---
 
@@ -346,7 +343,7 @@ Verifica que las variables guardadas se puedan usar en cálculos posteriores.
 - **Resultado esperado:**
   $\text{radio} = 3$ y $\text{area\_aprox} = 28.27431$.
 
-[Insertar pantallazo de la prueba 4 aquí]
+![prueba](imagenes/cuatro.png)
 
 ---
 
@@ -359,7 +356,7 @@ Si el usuario escribe caracteres raros que no existen en el lenguaje, el program
 - **Resultado:**
   `Error lexico: Caracter no reconocido '@'`
 
-[Insertar pantallazo de la prueba 5 aquí]
+![prueba](imagenes/cinco.png)
 
 ---
 
@@ -368,11 +365,14 @@ Si la estructura de la oración está rota (por ejemplo, faltan paréntesis o so
 - **Caso A (Paréntesis sin cerrar):**
   - **Entrada:** `y = (5 + 3 * 2;`
   - **Resultado:** `Error sintactico: Se esperaba ')', se obtuvo ';'`
+ 
+![prueba](imagenes/6.1.png)
+
 - **Caso B (Operador sin número al lado):**
   - **Entrada:** `z = 5 + * 2;`
   - **Resultado:** `Error sintactico: Expresion no valida, token inesperado '*'`
 
-[Insertar pantallazo de la prueba 6 aquí]
+![prueba](imagenes/6.2.png)
 
 ---
 
@@ -381,11 +381,17 @@ Errores de lógica que violan las reglas del lenguaje o de las matemáticas:
 - **Caso A (Usar una variable que no existe todavía):**
   - **Entrada:** `total = precio + 10;`
   - **Resultado:** `Error semantico: Variable 'precio' no ha sido inicializada`
+ 
+![prueba](imagenes/7a.png)
+
 - **Caso B (División entre cero):**
   - **Entrada:** `n = 20 / 0;`
   - **Resultado:** `Error semantico: Division por cero`
+ 
+![prueba](imagenes/7b.png)
+
 - **Caso C (Módulo entre cero):**
   - **Entrada:** `m = 20 % 0;`
   - **Resultado:** `Error semantico: Modulo por cero`
 
-[Insertar pantallazo de la prueba 7 aquí]
+![prueba](imagenes/7c.png)
