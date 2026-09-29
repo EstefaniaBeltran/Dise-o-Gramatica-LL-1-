@@ -1,13 +1,12 @@
 # Taller: Diseño e Implementación de una Gramática LL(1)
 
-**Autora:** Yeimy Beltrán  
-**Entorno:** Python 3 / Linux (Ubuntu)
+**Integrantes:** Arcos, Beltrán, Guitierrez y Lagos
 
 ---
 
 ## Qué se hizo
 
-En este taller diseñé e implementé un analizador e intérprete basado en una gramática formal **LL(1)** para un lenguaje de programación aritmético. El lenguaje soporta operaciones binarias básicas ($+$, $-$, $*$, $/$, $\text{mod}$), funciones matemáticas ($\text{abs}$, $\text{Sin}$, $\text{Cos}$, $\text{Tan}$) y asignación de variables en memoria mediante una tabla de símbolos.
+En este taller implemento una Gramática LL(1) para un lenguaje de programación. El lenguaje soporta operaciones binarias básicas ($+$, $-$, $*$, $/$, $\text{mod}$), funciones matemáticas ($\text{abs}$, $\text{Sin}$, $\text{Cos}$, $\text{Tan}$) y asignación de variables en memoria mediante una tabla de símbolos.
 
 El sistema garantiza de manera estricta las tres fases fundamentales del procesamiento de lenguajes:
 
