@@ -330,7 +330,7 @@ Se comprueba que se respeten las reglas matemáticas: resolver primero lo de ade
   ```
 - **Resultado esperado:**
   Primero suma $(10 + 5) = 15$, luego multiplica por 2 ($30$), calcula $\text{abs}(-8)/2 = 4.0$ y resta para obtener $\text{res} = 26.0$.
-![prueba](imagenes/cuatro.png)
+![prueba](imagenes/tres.png)
 
 ---
 
@@ -340,9 +340,6 @@ Verifica que las variables guardadas se puedan usar en cálculos posteriores.
   ```text
   radio = 3; area_aprox = 3.14159 * radio * radio;
   ```
-- **Resultado esperado:**
-  $\text{radio} = 3$ y $\text{area\_aprox} = 28.27431$.
-
 ![prueba](imagenes/cuatro.png)
 
 ---
